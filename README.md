@@ -7,6 +7,8 @@ Compile Command: g++ client.cpp -o client -lws2_32
 
 [!] Platform: Windows
 
+[!] Compiler: MinGW-64Bit
+
 [!] Port: 5005 (modifiable)
 
 ![](images/commands.png)
