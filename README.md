@@ -6,3 +6,6 @@ This program utilizes the winsock library for sending and receiving data with th
 [!] Platform: Windows
 
 [!] Port: 5005
+
+<Commands>
+![](images/commands.png)
