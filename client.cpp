@@ -124,8 +124,6 @@ int main()
         else if (RemoteCommand == "deletedirectory") {
             DelDirectory(recvall(getBufferSize()));
         }
-
-        // Clear Buffer
         memset(buffer, 0, sizeof(buffer));
     }
 }
