@@ -5,7 +5,7 @@
 #include <vector>
 using namespace std;
 
-const string HOST = "";
+const string SERVER = "";
 const int PORT = 5005;
 
 char buffer[1024];
@@ -59,7 +59,7 @@ int main()
     sockaddr_in client;
     client.sin_family = AF_INET;
     client.sin_port = htons(PORT);
-    client.sin_addr.s_addr = inet_addr(HOST.c_str());
+    client.sin_addr.s_addr = inet_addr(SERVER.c_str());
     setsockopt(objSocket, SOL_SOCKET, SO_RCVTIMEO, (char*)&TIMEOUT, sizeof(TIMEOUT));
 
     if (connect(objSocket, (sockaddr*)&client, sizeof(client)) == SOCKET_ERROR) {
