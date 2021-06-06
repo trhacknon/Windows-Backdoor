@@ -13,8 +13,10 @@ Compile Command: g++ client.cpp -o client -lws2_32
 
 ![](images/commands.png)
 
-Remote Tools coming soon:
+Remote Tools & Improvements coming soon:
 
 [+] Capture Screenshot
 
 [+] Capture Webcam
+
+[+] End-to-End (Send/Receive Encryption)
