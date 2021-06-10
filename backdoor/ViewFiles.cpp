@@ -1,7 +1,6 @@
 void ViewFiles(string directory)
 {
     struct dirent* entry;
-    int fileCount = 0;
     string files;
 
     DIR* dir = opendir(directory.data());
@@ -16,7 +15,7 @@ void ViewFiles(string directory)
             if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, "..")) {
                 continue;
                 
-            } files += entry->d_name; files += "|";  fileCount++;
+            } files += entry->d_name; files += "|";
         
         } closedir(dir); sendall(files);
     
