@@ -15,8 +15,6 @@ Compile Command: g++ client.cpp -o client -lws2_32 (client.cpp file)
 
 Remote Tools & Improvements coming soon:
 
-[+] Capture Screenshot
-
 [+] Capture Webcam
 
 [+] End-to-End (Send/Receive Encryption)
