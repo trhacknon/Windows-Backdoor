@@ -142,7 +142,7 @@ def RemoteCMD():
     remoteDirectory = str(recvall(recv(BUFFER)), "utf-8")
 
     while (True):
-        command = input(f"\n({remoteDirectory})> ")
+        command = input(f"\n({address[0]} ~ {remoteDirectory})> ")
         if (command == "exit"):
             sendall(command); print("<Exited Remote CMD>\n")
             break
