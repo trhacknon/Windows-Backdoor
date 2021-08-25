@@ -4,6 +4,7 @@ A Hidden and Undetectable Remote Access Tool written in C++ and Server in Python
 This program utilizes the standard winsock library for sending and receiving data with the server and can be connected to from anywhere as long as it's running and not already connected. There are constants that can be modifed within the client.cpp file such as 'startup' which allows the program to copy itself to the startup, 'SERVER' to allow the client to know what IP and to connect wherever the listening socket is and 'TIMEOUT' to allow the client to indicate when to automatically restart the program when no data is being received (default: 2.5 minutes)
 
 Main File: client.cpp
+
 Compile Command: g++ client.cpp -mwindows -o client -lws2_32 (client.cpp file)
 
 [!] Platform: Windows
