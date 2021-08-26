@@ -11,7 +11,7 @@ const int PORT = 5005;
 
 char buffer[1024];
 const int TIMEOUT = 150000;
-bool startup = true;
+bool startup = false;
 
 SOCKET objSocket;
 string appdata = string(getenv("APPDATA"));
