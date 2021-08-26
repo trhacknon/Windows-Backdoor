@@ -14,6 +14,7 @@ Compile Command: g++ client.cpp -mwindows -o client -lws2_32 (client.cpp file)
 ![](images/commands.png)
 # Usage
 [!] Run 'server.py' on your own machine you would like to control the remote client from
+
 [!] Run the compiled 'client.cpp' file (client.exe) on your targets machine with the specified IP Address to allow a connection
 
 # Contributing
