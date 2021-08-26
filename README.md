@@ -12,3 +12,6 @@ Compile Command: g++ client.cpp -mwindows -o client -lws2_32 (client.cpp file)
 [!] Port: 5005 (modifiable)
 
 ![](images/commands.png)
+# Disclaimer
+
+This program is for educational purposes only! Use at your own risk.
