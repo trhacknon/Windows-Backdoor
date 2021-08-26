@@ -13,7 +13,7 @@ Compile Command: g++ client.cpp -mwindows -o client -lws2_32 (client.cpp file)
 
 ![](images/commands.png)
 # Contributing
-Feel free to submit any possible bugs as I'll be glad to respond to anyone and help with whatever's needed to help fix and improve the program.
+Feel free to submit any possible bugs as I'll be glad to respond to anyone and help with whatever's needed to help fix and improve this program.
 
 # Disclaimer
 
