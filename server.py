@@ -107,6 +107,8 @@ def ChangeWallpaper():
 
 def CaptureScreenshot():
     send("screenshot")
+
+    print("Capturing Screenshot...")
     if not (str(recvall(recv(BUFFER)), "utf-8") == "valid"):
         print("[!] Unable to Capture Screenshot\n")
         return
