@@ -9,7 +9,7 @@ Compile: g++ client.cpp -mwindows -o client -lws2_32 -static-libgcc -static-libs
 -  Compiler: MinGW-64Bit
 -  Port: 5005 (modifiable)
 
-![](commands.png)
+![](rm-commands.png)
 # Usage
 - Run 'server.py' on your own machine you would like to control the remote client from
 - Run the compiled 'client.exe' file (client.cpp) on your targets machine with your specified IP Address to establish a connection along with an unused port as set default already
