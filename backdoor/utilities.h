@@ -19,7 +19,7 @@ std::string recv()
 
 void sendAll(std::string data)
 {
-	std::string size = std::to_string(data.length());
+    std::string size = std::to_string(data.length());
 
     send(objSocket, size.data(), size.length(), 0);
 	if (recv() == "success") {
