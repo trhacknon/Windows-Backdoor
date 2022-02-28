@@ -12,9 +12,9 @@ void send(std::string data)
 
 std::string recv()
 {
-	memset(buffer, 0, sizeof(buffer));
+    memset(buffer, 0, sizeof(buffer));
     recv(objSocket, buffer, sizeof(buffer), 0);
-	return buffer;
+    return buffer;
 }
 
 void sendAll(std::string data)
