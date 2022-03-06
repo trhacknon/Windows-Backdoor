@@ -5,12 +5,13 @@ This program utilizes the standard winsock library for sending and receiving dat
 
 -  Platform: Windows
 -  Compiler: MinGW-64Bit
--  Port: 5005 (modifiable)
+-  Port: 5005 (default)
 
 ![](commands.png)
 # Usage
 - Run 'server.py' on your own machine you would like to control the remote client from
 - Run the compiled 'backdoor.exe' file (backdoor.cpp) on your targets machine with your specified IP Address to establish a connection along with an unused port as set default already
+- g++ backdoor.cpp -mwindows -o backdoor -lws2_32 -lstrmiids -lole32 -loleaut32 -static-libgcc -static-libstdc++ -static
 
 # Contributing
 - Feel free to submit any possible bugs as I'll be glad to respond to anyone and help with whatever's needed to help fix and improve this program.
