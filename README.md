@@ -11,7 +11,7 @@ This program utilizes the standard winsock library for sending and receiving dat
 
 ![](commands.png)
 # Usage
-- Run 'server.py' on your own machine you would like to control the remote client from.
+- Run the 'server.py' file on your own machine you would like to control the remote client from.
 - Run the compiled 'backdoor.exe' file (backdoor.cpp) on your targets machine with the specified server IP Address to establish a connection on an unoccupied port.
 
 # Contributing
