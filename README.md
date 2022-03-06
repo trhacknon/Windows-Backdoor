@@ -9,7 +9,7 @@ Compile: g++ backdoor.cpp -mwindows -o backdoor -lws2_32 -static-libgcc -static-
 -  Compiler: MinGW-64Bit
 -  Port: 5005 (modifiable)
 
-![](rm-commands.png)
+![](commands.png)
 # Usage
 - Run 'server.py' on your own machine you would like to control the remote client from
 - Run the compiled 'backdoor.exe' file (backdoor.cpp) on your targets machine with your specified IP Address to establish a connection along with an unused port as set default already
