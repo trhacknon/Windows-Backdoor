@@ -10,7 +10,7 @@ This program utilizes the standard winsock library for sending and receiving dat
 -  Linkers for Self-Contained File: -static-libgcc -static-libstdc++ -static
 
 ![](images/commands.png)<br/>
-![](images/connected.png)
+![](images/console.png)
 
 # Usage
 - Run the 'server.py' file on your own machine you would like to control the remote client from.
