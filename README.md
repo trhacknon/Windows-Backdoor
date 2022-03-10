@@ -9,7 +9,7 @@ This program utilizes the standard winsock library for sending and receiving dat
 -  Compile: g++ backdoor.cpp -mwindows -o backdoor -lws2_32 -lstrmiids -lole32 -loleaut32
 -  Linkers for Self-Contained File: -static-libgcc -static-libstdc++ -static
 
-![](images/connected.png)
+![](images/connected.png)<br/>
 ![](images/commands.png)
 # Usage
 - Run the 'server.py' file on your own machine you would like to control the remote client from.
