@@ -8,6 +8,7 @@ This program utilizes the standard winsock library for sending and receiving dat
 -  Port: 5005 (default)
 -  Compile: g++ backdoor.cpp -mwindows -o backdoor -lws2_32 -lstrmiids -lole32 -loleaut32
 -  Linkers for Self-Contained File: -static-libgcc -static-libstdc++ -static
+-  No Third Party Libraries required.
 
 ![](images/commands.png)<br/>
 ![](images/console.png)
@@ -15,7 +16,6 @@ This program utilizes the standard winsock library for sending and receiving dat
 # Usage
 - Run the 'server.py' file on your own machine you would like to control the remote client from.
 - Run the compiled 'backdoor.exe' file (backdoor.cpp) on your targets machine with the specified server IP Address to establish a connection on an unoccupied port.
-- No Third Party Libraries required.
 
 # Contributing
 - Feel free to submit any possible bugs as I'll be glad to respond to anyone and help with whatever's needed to help fix and improve this program.
