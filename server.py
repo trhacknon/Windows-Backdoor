@@ -5,7 +5,6 @@ import time
 import os
 import re
 
-HOST = "0.0.0.0"
 PORT = 5005
 BUFFER = 8192
 
@@ -50,7 +49,7 @@ def conn_stream():
 def RemoteConnect():
     objSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     objSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    objSocket.bind((HOST, PORT))
+    objSocket.bind(("0.0.0.0", PORT))
     objSocket.listen(socket.SOMAXCONN)
 
     while (True):
