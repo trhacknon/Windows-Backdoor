@@ -10,7 +10,9 @@ This program utilizes the standard winsock library for sending and receiving dat
 -  Linkers for Self-Contained File: -static-libgcc -static-libstdc++ -static
 -  No Third Party Libraries required.
 
+![](images/connection_commands.png)<br/>
 ![](images/commands.png)<br/>
+![](images/clients.png)<br/>
 ![](images/console.png)
 
 # Usage
