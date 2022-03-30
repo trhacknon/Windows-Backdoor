@@ -3,8 +3,8 @@ A Hidden and Undetectable Remote Access Tool written in C++ and Server in Python
 
 This program utilizes the standard winsock library for sending and receiving data back and forth between the server and client. The server can manage multiple connections at once with the use of multi-threading having an easy time switching to other remote machines simply in order to control it from a command line view.
 <br/><br/>
-There are defined constants within the client program that include:
-- TIMEOUT: 
+Constants in Client Program:
+- timeout: Client doesn't receive any data within a certain time period, ultimately restarting the program to retry connecting to the server.
 
 # Client Requirements
 -  Operating System: Windows
