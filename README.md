@@ -5,7 +5,7 @@ This program utilizes the standard winsock library for sending and receiving dat
 <br/><br/>
 Constants in Client Program:
 - <b>server</b>: Specify server's IP address here
-- <b>startup</b>: If enabled, copies itself to the targets startup folder upon restart.
+- <b>startup</b>: If enabled, copies itself to the targets startup folder upon runtime.
 - <b>timeout</b>: Restarts client if no data is received after a specified period of time (default: 5 minutes)
 
 # Client Requirements
