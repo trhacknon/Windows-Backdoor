@@ -6,7 +6,7 @@ This program utilizes the standard winsock library for sending and receiving dat
 # Requirements
 -  System: Windows
 -  Compiler: C++ MinGW 64-Bit
--  Python3: Libaries - prettytable
+-  Python3 Interpreter
 
 ![](images/connection_commands.png)<br/>
 ![](images/commands.png)<br/>
