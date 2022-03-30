@@ -18,8 +18,7 @@ This program utilizes the standard winsock library for sending and receiving dat
 - Run the compiled 'backdoor.exe' file (backdoor.cpp) on your targets machine with the specified server IP Address to establish a connection on an unoccupied port.
 
 # Compile C++ Program
-- g++ backdoor.cpp -mwindows -o backdoor -lws2_32 -lstrmiids -lole32 -loleaut32
-- Linkers for Self-Contained File: -static-libgcc -static-libstdc++ -static
+- g++ backdoor.cpp -mwindows -o backdoor -lws2_32 -lstrmiids -lole32 -loleaut32 -static-libgcc -static-libstdc++ -static
 
 # Contributing
 - Feel free to submit any possible bugs as I'll be glad to respond to anyone and help with whatever's needed to help fix and improve this program.
