@@ -12,7 +12,7 @@ Constants in Client Program:
 -  Operating System: Windows
 -  Compiler: C++ MinGW 64-Bit
 
-# View
+# Server View
 ![](images/connection_commands.png)<br/>
 ![](images/commands.png)<br/>
 ![](images/clients.png)<br/>
