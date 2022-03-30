@@ -640,7 +640,7 @@ def RemoteCommands(connection):
             break
 
         except Exception as e:
-            print(f"\n[-] Lost Connection to ({clientInfo[0][0][0]})\n" + f"Error Message: {e}")
+            print(f"\n[-] Lost Connection to ({IP_Address})\n" + f"Error Message: {e}")
             clients.remove(client)
             del(clientInfo[connection])
             break
