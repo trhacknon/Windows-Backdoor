@@ -492,7 +492,7 @@ def SelectConnection():
                 try:
                     client.send(b"test")
                     if (client.recv(1024) == b"success"):
-                        RemoteCommands(connection)
+                        RemoteControl(connection)
 
                 except ConnectionResetError:
                     del(clientInfo[int(clients.index(client))])
@@ -535,7 +535,7 @@ def SelectConnection():
             if (len(clients) == 0):
                 clientInfo.clear()
 
-def RemoteCommands(connection):
+def RemoteControl(connection):
     global client, IP_Address, PC_Name, PC_Username, PC_System
 
     client = clients[connection]
