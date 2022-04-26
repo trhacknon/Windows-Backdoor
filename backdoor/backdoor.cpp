@@ -18,7 +18,7 @@ std::string file, command, data, fileName, firstPath;
 
 SOCKET objSocket;
 char buffer[16384];
-const bool startup = true;
+const bool startup = false;
 const int timeout = 300000;
 
 #include "utilities.h"
